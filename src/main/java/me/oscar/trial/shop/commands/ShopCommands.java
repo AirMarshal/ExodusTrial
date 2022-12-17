@@ -28,6 +28,7 @@ public class ShopCommands implements CommandExecutor {
                 player.sendMessage(" ");
                 player.sendMessage(ChatColor.YELLOW + "/shop create");
                 player.sendMessage(ChatColor.YELLOW + "/shop additem <price>");
+                player.sendMessage(ChatColor.YELLOW + "/shop delete");
                 return true;
             }
 
