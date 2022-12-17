@@ -1,0 +1,7 @@
+name: PlayerShops
+main: me.oscar.trial.ShopPlugin
+version: 1.0
+api-version: 1.18
+depend: [ ProtocolLib ]
+commands:
+  shop:

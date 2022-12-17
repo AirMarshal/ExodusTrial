@@ -1,0 +1,6 @@
+SEND_BUY_MESSAGE: TRUE
+SEND_SELL_MESSAGE: TRUE
+SEND_REMOVE_MESSAGE: TRUE
+SELL_MESSAGE: "&eYou have sold &b%item% &efor &b%price%"
+BUY_MESSAGE: "&eYou have purchased &b%item% &efor &b$%price%"
+REMOVE_MESSAGE: "&eYou have removed &b%item% &efrom your shop."
