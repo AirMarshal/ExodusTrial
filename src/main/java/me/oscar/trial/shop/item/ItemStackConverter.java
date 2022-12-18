@@ -19,17 +19,17 @@ public class ItemStackConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object encode(Object value, MappedField optionalExtraInfo) {
-        ItemStack itemStack = (ItemStack) value;
+    public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        final ItemStack itemStack = (ItemStack) value;
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        BukkitObjectOutputStream dataOutput;
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final BukkitObjectOutputStream dataOutput;
 
         try {
             dataOutput = new BukkitObjectOutputStream(outputStream);
             dataOutput.writeObject(itemStack);
             dataOutput.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 
@@ -37,16 +37,16 @@ public class ItemStackConverter extends TypeConverter implements SimpleValueConv
     }
 
     @Override
-    public Object decode(Class<?> aClass, Object o, MappedField mappedField) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines((String) o));
-        BukkitObjectInputStream dataInput;
+    public Object decode(final Class<?> aClass, final Object o, final MappedField mappedField) {
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines((String) o));
+        final BukkitObjectInputStream dataInput;
         ItemStack item = null;
 
         try {
             dataInput = new BukkitObjectInputStream(inputStream);
             item = (ItemStack) dataInput.readObject();
             dataInput.close();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (final IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 

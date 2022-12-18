@@ -15,24 +15,24 @@ public class EntityPacketHandler {
 
     private final ShopPlugin shopPlugin;
 
-    public EntityPacketHandler(ShopPlugin shopPlugin) {
+    public EntityPacketHandler(final ShopPlugin shopPlugin) {
         this.shopPlugin = shopPlugin;
 
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+        final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         manager.addPacketListener(new PacketAdapter(this.shopPlugin, PacketType.Play.Client.USE_ENTITY) {
             @Override
-            public void onPacketReceiving(PacketEvent event) {
+            public void onPacketReceiving(final PacketEvent event) {
                 if (event.isCancelled()) {
                     return;
                 }
 
-                Player targetPlayer = event.getPlayer();
-                PacketContainer packet = event.getPacket();
+                final Player targetPlayer = event.getPlayer();
+                final PacketContainer packet = event.getPacket();
 
-                int id = packet.getIntegers().read(0);
+                final int id = packet.getIntegers().read(0);
 
                 if (shopPlugin.getEntityHandler().getRegisteredShops().containsKey(id)) {
-                    ShopEntity entity = shopPlugin.getEntityHandler().getRegisteredShops().get(id);
+                    final ShopEntity entity = shopPlugin.getEntityHandler().getRegisteredShops().get(id);
                     Bukkit.getScheduler().runTask(shopPlugin, () -> targetPlayer.openInventory(new ShopMenu(entity.getOwnerName(), entity.getOwnerID(), targetPlayer.getUniqueId(), shopPlugin).getInventory()));
                 }
             }

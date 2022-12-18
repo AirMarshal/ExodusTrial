@@ -25,7 +25,7 @@ public abstract class Menu implements InventoryHolder {
     private final int itemsPerPage;
     private final List<PlayerShopItem> pageItems = new ArrayList<>();
 
-    public Menu(String title, int itemsPerPage) {
+    public Menu(final String title, final int itemsPerPage) {
         this.itemsPerPage = (int) (Math.ceil(itemsPerPage / 9D) * 9D);
 
         if (this.itemsPerPage > 36) {
@@ -49,11 +49,11 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public ItemStack getNextButton() {
-        ItemStack stack = new ItemStack(Material.GREEN_WOOL);
-        ItemMeta itemMeta = stack.getItemMeta();
+        final ItemStack stack = new ItemStack(Material.GREEN_WOOL);
+        final ItemMeta itemMeta = stack.getItemMeta();
 
-        int offsetPage = this.currentPage + 1;
-        int maxPage = (this.getMaxPages() + 1);
+        final int offsetPage = this.currentPage + 1;
+        final int maxPage = (this.getMaxPages() + 1);
         itemMeta.setDisplayName(ChatColor.YELLOW + "Current Page: " + ChatColor.GOLD + offsetPage + ChatColor.GRAY + "/" + ChatColor.GOLD + maxPage);
         itemMeta.setLore(offsetPage == maxPage ? List.of(ChatColor.RED + "This is the final page.") : List.of(ChatColor.GRAY + "Click me to move to page " + (offsetPage + 1)));
 
@@ -63,11 +63,11 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public ItemStack getBackButton() {
-        ItemStack stack = new ItemStack(Material.RED_WOOL);
-        ItemMeta itemMeta = stack.getItemMeta();
+        final ItemStack stack = new ItemStack(Material.RED_WOOL);
+        final ItemMeta itemMeta = stack.getItemMeta();
 
-        int offsetPage = this.currentPage + 1;
-        int maxPage = (this.getMaxPages() + 1);
+        final int offsetPage = this.currentPage + 1;
+        final int maxPage = (this.getMaxPages() + 1);
         itemMeta.setDisplayName(ChatColor.YELLOW + "Current Page: " + ChatColor.GOLD + offsetPage + ChatColor.GRAY + "/" + ChatColor.GOLD + maxPage);
         itemMeta.setLore(offsetPage == 1 ? List.of(ChatColor.RED + "This is the first page.") : List.of(ChatColor.GRAY + "Click me to move to page " + (offsetPage - 1)));
 
@@ -84,10 +84,6 @@ public abstract class Menu implements InventoryHolder {
         return this.currentPage;
     }
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
     public void incrementPage() {
         this.currentPage++;
     }
@@ -97,7 +93,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public int getItemsPerPage() {
-        return itemsPerPage;
+        return this.itemsPerPage;
     }
 
     public List<PlayerShopItem> getPageItems() {

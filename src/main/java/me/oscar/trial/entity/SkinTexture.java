@@ -5,7 +5,7 @@ public class SkinTexture {
     private String value;
     private String signature;
 
-    public SkinTexture(String value, String signature) {
+    public SkinTexture(final String value, final String signature) {
         this.value = value;
         this.signature = signature;
     }

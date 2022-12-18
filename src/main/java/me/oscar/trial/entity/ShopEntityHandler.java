@@ -29,12 +29,12 @@ public class ShopEntityHandler {
     private final AtomicInteger atomicInteger = new AtomicInteger();
     private final ShopPlugin shopPlugin;
 
-    public ShopEntityHandler(ShopPlugin shopPlugin) {
+    public ShopEntityHandler(final ShopPlugin shopPlugin) {
         this.shopPlugin = shopPlugin;
     }
 
-    public void spawnNPC(Player receiver, ShopEntity shopEntity) {
-        PlayerConnection playerConnection = ((CraftPlayer) receiver).getHandle().b;
+    public void spawnNPC(final Player receiver, final ShopEntity shopEntity) {
+        final PlayerConnection playerConnection = ((CraftPlayer) receiver).getHandle().b;
 
         if (shopEntity.getId() == null) {
             shopEntity.setId(this.atomicInteger.incrementAndGet());
@@ -51,19 +51,19 @@ public class ShopEntityHandler {
                 playerConnection.a(this.createInfoPacket(shopEntity, PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e)), 5L);
     }
 
-    public void spawnNPC(ShopEntity shopEntity) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+    public void spawnNPC(final ShopEntity shopEntity) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             this.spawnNPC(player,shopEntity);
         }
     }
 
-    public void destroyNPC(Player receiver, ShopEntity shopEntity) {
-        PlayerConnection playerConnection = ((CraftPlayer) receiver).getHandle().b;
+    public void destroyNPC(final Player receiver, final ShopEntity shopEntity) {
+        final PlayerConnection playerConnection = ((CraftPlayer) receiver).getHandle().b;
         playerConnection.a(this.createInfoPacket(shopEntity, PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e));
     }
 
-    public void destroyNPC(ShopEntity shopEntity) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+    public void destroyNPC(final ShopEntity shopEntity) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             this.destroyNPC(player, shopEntity);
         }
     }
@@ -72,12 +72,12 @@ public class ShopEntityHandler {
         return this.registeredShops;
     }
 
-    private PacketPlayOutNamedEntitySpawn createEntitySpawn(ShopEntity shopEntity) {
+    private PacketPlayOutNamedEntitySpawn createEntitySpawn(final ShopEntity shopEntity) {
         return this.createPacketData(packetDataSerializer ->  {
             packetDataSerializer.d(shopEntity.getId());
             packetDataSerializer.a(shopEntity.getGameProfile().getId());
 
-            Location entityLocation = shopEntity.getLocation().toBukkitLocation();
+            final Location entityLocation = shopEntity.getLocation().toBukkitLocation();
             packetDataSerializer.writeDouble(entityLocation.getX());
             packetDataSerializer.writeDouble(entityLocation.getY());
             packetDataSerializer.writeDouble(entityLocation.getZ());
@@ -88,15 +88,15 @@ public class ShopEntityHandler {
         });
     }
 
-    private PacketPlayOutPlayerInfo createInfoPacket(ShopEntity shopEntity, PacketPlayOutPlayerInfo.EnumPlayerInfoAction infoAction) {
+    private PacketPlayOutPlayerInfo createInfoPacket(final ShopEntity shopEntity, final PacketPlayOutPlayerInfo.EnumPlayerInfoAction infoAction) {
         return this.createPacketData(packetDataSerializer -> {
-            ProfilePublicKey.a profilePublicKey = null;
+            final ProfilePublicKey.a profilePublicKey = null;
             packetDataSerializer.a(infoAction);
 
-            PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData = new PacketPlayOutPlayerInfo.PlayerInfoData(shopEntity.getGameProfile(), 149, EnumGamemode.b, CraftChatMessage.fromString(shopEntity.getGameProfile().getName())[0], profilePublicKey);
-            List<PacketPlayOutPlayerInfo.PlayerInfoData> list = List.of(playerInfoData);
+            final PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData = new PacketPlayOutPlayerInfo.PlayerInfoData(shopEntity.getGameProfile(), 149, EnumGamemode.b, CraftChatMessage.fromString(shopEntity.getGameProfile().getName())[0], profilePublicKey);
+            final List<PacketPlayOutPlayerInfo.PlayerInfoData> list = List.of(playerInfoData);
 
-            Method method = infoAction.getDeclaringClass().getDeclaredMethod("a", PacketDataSerializer.class, PacketPlayOutPlayerInfo.PlayerInfoData.class);
+            final Method method = infoAction.getDeclaringClass().getDeclaredMethod("a", PacketDataSerializer.class, PacketPlayOutPlayerInfo.PlayerInfoData.class);
             method.setAccessible(true);
 
             packetDataSerializer.a(list, (PacketDataSerializer.b<PacketPlayOutPlayerInfo.PlayerInfoData>) (a,b) -> new BukkitRunnable() {
@@ -104,7 +104,7 @@ public class ShopEntityHandler {
                 public void run() {
                     try {
                         method.invoke(infoAction, a,b);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                    } catch (final IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
@@ -113,12 +113,12 @@ public class ShopEntityHandler {
         });
     }
 
-    private <T> T createPacketData(Callback<PacketDataSerializer, T> callback) {
-        PacketDataSerializer data = new PacketDataSerializer(Unpooled.buffer());
+    private <T> T createPacketData(final Callback<PacketDataSerializer, T> callback) {
+        final PacketDataSerializer data = new PacketDataSerializer(Unpooled.buffer());
         T result = null;
         try {
             result = callback.apply(data);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             data.release();

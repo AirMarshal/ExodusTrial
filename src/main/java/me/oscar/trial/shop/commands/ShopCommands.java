@@ -20,15 +20,15 @@ import org.bukkit.inventory.ItemStack;
 public class ShopCommands implements CommandExecutor {
 
     private final ShopPlugin shopPlugin;
-    public ShopCommands(ShopPlugin shopPlugin) {
+    public ShopCommands(final ShopPlugin shopPlugin) {
         this.shopPlugin = shopPlugin;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String s, final String[] args) {
         if (sender instanceof Player player) {
             if (args.length <= 0) {
-                for (String string : this.shopPlugin.getConfig().getStringList("MESSAGES.ERROR.HELP")) {
+                for (final String string : this.shopPlugin.getConfig().getStringList("MESSAGES.ERROR.HELP")) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', string));
                 }
                 return true;
@@ -40,14 +40,14 @@ public class ShopCommands implements CommandExecutor {
                     return true;
                 }
 
-                CraftPlayer craftPlayer = (CraftPlayer) player;
-                Property property = craftPlayer.getProfile().getProperties().get("textures").stream().findFirst().orElse(null);
+                final CraftPlayer craftPlayer = (CraftPlayer) player;
+                final Property property = craftPlayer.getProfile().getProperties().get("textures").stream().findFirst().orElse(null);
 
-                ShopEntity shopEntity = new ShopEntity(new EntityLocation(player.getLocation()), player.getName(), player.getUniqueId(), new SkinTexture(property.getValue(), property.getSignature()));
+                final ShopEntity shopEntity = new ShopEntity(new EntityLocation(player.getLocation()), player.getName(), player.getUniqueId(), new SkinTexture(property.getValue(), property.getSignature()));
 
                 this.shopPlugin.getEntityHandler().getRegisteredShops().put(shopEntity.getId(), shopEntity);
 
-                PlayerShop playerShop = new PlayerShop(player.getUniqueId(), shopEntity);
+                final PlayerShop playerShop = new PlayerShop(player.getUniqueId(), shopEntity);
                 this.shopPlugin.getShopHandler().getIdToShop().put(player.getUniqueId(), playerShop);
                 Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> {
                     this.shopPlugin.getEntityHandler().spawnNPC(shopEntity);
@@ -57,14 +57,14 @@ public class ShopCommands implements CommandExecutor {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.SHOP_CREATE")));
             } else if (args[0].equalsIgnoreCase("delete")) {
 
-                PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
+                final PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
 
                 if (playerShop == null) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.DONT_HAVE_SHOP")));
                     return true;
                 }
 
-                ShopEntity shopEntity = playerShop.getShopEntity();
+                final ShopEntity shopEntity = playerShop.getShopEntity();
 
                 this.shopPlugin.getEntityHandler().getRegisteredShops().remove(shopEntity.getId(), shopEntity);
                 this.shopPlugin.getShopHandler().getIdToShop().remove(player.getUniqueId());
@@ -76,8 +76,8 @@ public class ShopCommands implements CommandExecutor {
 
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.shopPlugin.getConfig().getString("MESSAGES.SHOP_DELETE")));
             } else if (args[0].equalsIgnoreCase("additem")) {
-                PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
-                ItemStack itemInHand = player.getItemInHand();
+                final PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
+                final ItemStack itemInHand = player.getItemInHand();
 
                 if (playerShop == null) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.DONT_HAVE_SHOP")));

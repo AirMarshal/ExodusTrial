@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class MenuListener implements Listener {
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(final InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof Menu menu) {
             if (menu.consumer() != null) {
                 menu.consumer().accept(event);

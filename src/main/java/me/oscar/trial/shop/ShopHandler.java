@@ -9,9 +9,9 @@ import java.util.UUID;
 public class ShopHandler {
     private final Map<UUID, PlayerShop> idToShop = new HashMap<>();
 
-    private ShopPlugin shopPlugin;
+    private final ShopPlugin shopPlugin;
 
-    public ShopHandler(ShopPlugin shopPlugin) {
+    public ShopHandler(final ShopPlugin shopPlugin) {
         this.shopPlugin = shopPlugin;
 
         this.load();
@@ -30,7 +30,7 @@ public class ShopHandler {
         return this.idToShop;
     }
 
-    public PlayerShop getShopByID(UUID uuid) {
+    public PlayerShop getShopByID(final UUID uuid) {
         return this.idToShop.get(uuid);
     }
 }

@@ -20,9 +20,9 @@ public class ShopEntityConverter extends TypeConverter implements SimpleValueCon
     }
 
     @Override
-    public Object encode(Object value, MappedField optionalExtraInfo) {
-        ShopEntity shopEntity = (ShopEntity) value;
-        JsonObject jsonObject = new JsonObject();
+    public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        final ShopEntity shopEntity = (ShopEntity) value;
+        final JsonObject jsonObject = new JsonObject();
         jsonObject.add("location", this.gson.toJsonTree(shopEntity.getLocation()));
         jsonObject.addProperty("ownerName", shopEntity.getOwnerName());
         jsonObject.addProperty("ownerID", shopEntity.getOwnerID().toString());
@@ -32,14 +32,14 @@ public class ShopEntityConverter extends TypeConverter implements SimpleValueCon
     }
 
     @Override
-    public Object decode(Class<?> aClass, Object o, MappedField mappedField) {
-        JsonObject jsonObject = this.gson.fromJson((String)o, JsonObject.class);
-        EntityLocation entityLocation = this.gson.fromJson(jsonObject.get("location"), EntityLocation.class);
-        String ownerName = jsonObject.get("ownerName").getAsString();
-        UUID uuid = UUID.fromString(jsonObject.get("ownerID").getAsString());
-        SkinTexture skinTexture = this.gson.fromJson(jsonObject.get("skintexture"), SkinTexture.class);
+    public Object decode(final Class<?> aClass, final Object o, final MappedField mappedField) {
+        final JsonObject jsonObject = this.gson.fromJson((String)o, JsonObject.class);
+        final EntityLocation entityLocation = this.gson.fromJson(jsonObject.get("location"), EntityLocation.class);
+        final String ownerName = jsonObject.get("ownerName").getAsString();
+        final UUID uuid = UUID.fromString(jsonObject.get("ownerID").getAsString());
+        final SkinTexture skinTexture = this.gson.fromJson(jsonObject.get("skintexture"), SkinTexture.class);
 
-        ShopEntity shopEntity = new ShopEntity(entityLocation,ownerName , uuid, skinTexture);
+        final ShopEntity shopEntity = new ShopEntity(entityLocation,ownerName , uuid, skinTexture);
         shopEntity.setId(jsonObject.get("id").getAsInt());
         return shopEntity;
     }

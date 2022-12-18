@@ -6,7 +6,7 @@ public class PlayerShopItem {
     private ItemStack stack;
     private double price;
 
-    public PlayerShopItem(ItemStack stack, double price) {
+    public PlayerShopItem(final ItemStack stack, final double price) {
         this.stack = stack;
         this.price = price;
     }
@@ -16,10 +16,10 @@ public class PlayerShopItem {
     }
 
     public ItemStack getStack() {
-        return stack;
+        return this.stack;
     }
 
     public double getPrice() {
-        return price;
+        return this.price;
     }
 }

@@ -19,7 +19,7 @@ public class PlayerShop {
     private List<PlayerShopItem> items = new ArrayList<>();
     private ShopEntity shopEntity;
 
-    public PlayerShop(UUID uuid, ShopEntity shopEntity) {
+    public PlayerShop(final UUID uuid, final ShopEntity shopEntity) {
         this.ownerID = uuid;
         this.shopEntity = shopEntity;
     }
@@ -28,7 +28,7 @@ public class PlayerShop {
 
     }
 
-    public void addItem(PlayerShopItem item) {
+    public void addItem(final PlayerShopItem item) {
         this.items.add(item);
     }
 
