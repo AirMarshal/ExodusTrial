@@ -27,6 +27,7 @@ public class ShopEntityConverter extends TypeConverter implements SimpleValueCon
         jsonObject.addProperty("ownerName", shopEntity.getOwnerName());
         jsonObject.addProperty("ownerID", shopEntity.getOwnerID().toString());
         jsonObject.add("skintexture", this.gson.toJsonTree(shopEntity.getTexture()));
+        jsonObject.addProperty("id", shopEntity.getId());
         return this.gson.toJson(jsonObject);
     }
 
@@ -37,6 +38,9 @@ public class ShopEntityConverter extends TypeConverter implements SimpleValueCon
         String ownerName = jsonObject.get("ownerName").getAsString();
         UUID uuid = UUID.fromString(jsonObject.get("ownerID").getAsString());
         SkinTexture skinTexture = this.gson.fromJson(jsonObject.get("skintexture"), SkinTexture.class);
-        return new ShopEntity(entityLocation,ownerName , uuid, skinTexture);
+
+        ShopEntity shopEntity = new ShopEntity(entityLocation,ownerName , uuid, skinTexture);
+        shopEntity.setId(jsonObject.get("id").getAsInt());
+        return shopEntity;
     }
 }

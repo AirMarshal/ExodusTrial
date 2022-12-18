@@ -17,98 +17,108 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Locale;
-
 public class ShopCommands implements CommandExecutor {
+
+    private final ShopPlugin shopPlugin;
+    public ShopCommands(ShopPlugin shopPlugin) {
+        this.shopPlugin = shopPlugin;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player player) {
             if (args.length <= 0) {
-                player.sendMessage(ChatColor.GOLD + "Shop Commands: ");
-                player.sendMessage(" ");
-                player.sendMessage(ChatColor.YELLOW + "/shop create");
-                player.sendMessage(ChatColor.YELLOW + "/shop additem <price>");
-                player.sendMessage(ChatColor.YELLOW + "/shop delete");
+                for (String string : this.shopPlugin.getConfig().getStringList("MESSAGES.ERROR.HELP")) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', string));
+                }
                 return true;
             }
 
-            switch (args[0].toLowerCase()) {
-                case "create" -> {
-
-                    if (ShopPlugin.getInstance().getShopHandler().getShopByID(player.getUniqueId()) != null) {
-                        player.sendMessage(ChatColor.RED + "You already have a shop!");
-                        return true;
-                    }
-
-                    CraftPlayer craftPlayer = (CraftPlayer) player;
-                    Property property = craftPlayer.getProfile().getProperties().get("textures").stream().findFirst().orElse(null);
-
-                    ShopEntity shopEntity = new ShopEntity(new EntityLocation(player.getLocation()), player.getName(), player.getUniqueId(), new SkinTexture(property.getValue(), property.getSignature()));
-                    shopEntity.spawnNPC();
-
-                    ShopPlugin.getInstance().getEntityHandler().getRegisteredShops().put(shopEntity.getId(), shopEntity);
-
-                    PlayerShop playerShop = new PlayerShop(player.getUniqueId(), shopEntity);
-                    ShopPlugin.getInstance().getShopHandler().getIdToShop().put(player.getUniqueId(), playerShop);
-                    Bukkit.getScheduler().runTaskAsynchronously(ShopPlugin.getInstance(), () -> ShopPlugin.getInstance().getDatastore().save(playerShop));
-
-                    player.sendMessage(ChatColor.GREEN + "You have created a shop!");
+            if (args[0].equalsIgnoreCase("create")) {
+                if (this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId()) != null) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.ALREADY_HAVE_SHOP")));
+                    return true;
                 }
-                case "delete" -> {
 
-                    if (ShopPlugin.getInstance().getShopHandler().getShopByID(player.getUniqueId()) == null) {
-                        player.sendMessage(ChatColor.RED + "You do not have a shop");
-                        return true;
-                    }
+                CraftPlayer craftPlayer = (CraftPlayer) player;
+                Property property = craftPlayer.getProfile().getProperties().get("textures").stream().findFirst().orElse(null);
 
-                    PlayerShop playerShop = ShopPlugin.getInstance().getShopHandler().getShopByID(player.getUniqueId());
-                    ShopEntity shopEntity = playerShop.getShopEntity();
-                    shopEntity.destroyNPC();
+                ShopEntity shopEntity = new ShopEntity(new EntityLocation(player.getLocation()), player.getName(), player.getUniqueId(), new SkinTexture(property.getValue(), property.getSignature()));
 
-                    ShopPlugin.getInstance().getEntityHandler().getRegisteredShops().remove(shopEntity.getId(), shopEntity);
-                    ShopPlugin.getInstance().getShopHandler().getIdToShop().remove(player.getUniqueId());
-                    Bukkit.getScheduler().runTaskAsynchronously(ShopPlugin.getInstance(), () -> ShopPlugin.getInstance().getDatastore().delete(playerShop));
+                this.shopPlugin.getEntityHandler().getRegisteredShops().put(shopEntity.getId(), shopEntity);
 
-                    player.sendMessage(ChatColor.GREEN + "You have deleted your shop!");
+                PlayerShop playerShop = new PlayerShop(player.getUniqueId(), shopEntity);
+                this.shopPlugin.getShopHandler().getIdToShop().put(player.getUniqueId(), playerShop);
+                Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> {
+                    this.shopPlugin.getEntityHandler().spawnNPC(shopEntity);
+                    this.shopPlugin.getDatastore().save(playerShop);
+                });
+
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.SHOP_CREATE")));
+            } else if (args[0].equalsIgnoreCase("delete")) {
+
+                PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
+
+                if (playerShop == null) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.DONT_HAVE_SHOP")));
+                    return true;
                 }
-                case "additem" -> {
-                    PlayerShop playerShop = ShopPlugin.getInstance().getShopHandler().getShopByID(player.getUniqueId());
-                    ItemStack itemInHand = player.getItemInHand();
 
-                    if (playerShop == null) {
-                        player.sendMessage(ChatColor.RED + "You must have a shop if you wish to sell items!");
-                        return true;
-                    }
+                ShopEntity shopEntity = playerShop.getShopEntity();
 
-                    if (itemInHand.getType() == Material.AIR) {
-                        player.sendMessage(ChatColor.RED + "You must have the item you wish to sell in your hands!");
-                        return true;
-                    }
+                this.shopPlugin.getEntityHandler().getRegisteredShops().remove(shopEntity.getId(), shopEntity);
+                this.shopPlugin.getShopHandler().getIdToShop().remove(player.getUniqueId());
 
-                    if (args.length < 2) {
-                        player.sendMessage(ChatColor.RED + "You must enter a price you wish to sell the price for.");
-                        return true;
-                    }
+                Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> {
+                    this.shopPlugin.getEntityHandler().destroyNPC(shopEntity);
+                    this.shopPlugin.getDatastore().delete(playerShop);
+                });
 
-                    double price = 0;
-                    try {
-                        price = Double.parseDouble(args[1]);
-                    } catch (NumberFormatException ex) {
-                        ex.printStackTrace();
-                    }
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.shopPlugin.getConfig().getString("MESSAGES.SHOP_DELETE")));
+            } else if (args[0].equalsIgnoreCase("additem")) {
+                PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(player.getUniqueId());
+                ItemStack itemInHand = player.getItemInHand();
 
-                    if (price == 0 || price < 0) {
-                        player.sendMessage(ChatColor.RED + "You must list your item for more than 0");
-                        return true;
-                    }
-
-                    player.setItemInHand(new ItemStack(Material.AIR));
-                    playerShop.addItem(new PlayerShopItem(itemInHand, price));
-                    Bukkit.getScheduler().runTaskAsynchronously(ShopPlugin.getInstance(), () -> ShopPlugin.getInstance().getDatastore().save(playerShop));
-                    player.sendMessage(ChatColor.YELLOW + "You have listed your item for " + ChatColor.AQUA + "$" + ChatColor.YELLOW + price + ".");
+                if (playerShop == null) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.DONT_HAVE_SHOP")));
+                    return true;
                 }
+
+                if (itemInHand.getType() == Material.AIR) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.EMPTY_HANDS")));
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.INVALID_PRICE")));
+                    return true;
+                }
+
+                double price = 0;
+                try {
+                    price = Double.parseDouble(args[1]);
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (price == 0 || price < 0) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.ERROR.NEGATIVE_PRICE")));
+                    return true;
+                }
+
+                player.setItemInHand(new ItemStack(Material.AIR));
+                playerShop.addItem(new PlayerShopItem(itemInHand, price));
+                Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> this.shopPlugin.getDatastore().save(playerShop));
+                if (this.shopPlugin.getConfig().getBoolean("MESSAGES.LIST.ENABLED")) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.LIST.MESSAGE")
+                            .replace("%item%", itemInHand.getType().name())
+                            .replace("%price%", String.valueOf(price))));
+                }
+            } else if (args[0].equalsIgnoreCase("show")) {
+                this.shopPlugin.getServer().getScheduler().runTaskAsynchronously(this.shopPlugin,()
+                        -> this.shopPlugin.getEntityHandler().spawnNPC(this.shopPlugin.getShopHandler().getIdToShop().get(player.getUniqueId()).getShopEntity()));
+
             }
-
         }
 
         return true;

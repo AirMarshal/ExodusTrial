@@ -9,17 +9,21 @@ import java.util.UUID;
 public class ShopHandler {
     private final Map<UUID, PlayerShop> idToShop = new HashMap<>();
 
-    public ShopHandler() {
+    private ShopPlugin shopPlugin;
+
+    public ShopHandler(ShopPlugin shopPlugin) {
+        this.shopPlugin = shopPlugin;
+
         this.load();
     }
 
     public void load() {
-        ShopPlugin.getInstance().getDatastore().find(PlayerShop.class).iterator().forEachRemaining(playerShop -> {
+        this.shopPlugin.getDatastore().find(PlayerShop.class).iterator().forEachRemaining(playerShop -> {
             this.idToShop.put(playerShop.getOwnerID(), playerShop);
-            ShopPlugin.getInstance().getEntityHandler().getRegisteredShops().put(playerShop.getShopEntity().getId(), playerShop.getShopEntity());
+            this.shopPlugin.getEntityHandler().getRegisteredShops().put(playerShop.getShopEntity().getId(), playerShop.getShopEntity());
         });
 
-        ShopPlugin.getInstance().getLogger().info("Loaded %s shops".formatted(this.idToShop.size()));
+        this.shopPlugin.getLogger().info("Loaded %s shops".formatted(this.idToShop.size()));
     }
 
     public Map<UUID, PlayerShop> getIdToShop() {

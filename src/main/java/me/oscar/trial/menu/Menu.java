@@ -101,7 +101,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public List<PlayerShopItem> getPageItems() {
-        return pageItems;
+        return this.pageItems;
     }
 
 }

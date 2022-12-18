@@ -13,10 +13,13 @@ import org.bukkit.entity.Player;
 
 public class EntityPacketHandler {
 
+    private final ShopPlugin shopPlugin;
 
-    public EntityPacketHandler() {
+    public EntityPacketHandler(ShopPlugin shopPlugin) {
+        this.shopPlugin = shopPlugin;
+
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        manager.addPacketListener(new PacketAdapter(ShopPlugin.getInstance(), PacketType.Play.Client.USE_ENTITY) {
+        manager.addPacketListener(new PacketAdapter(this.shopPlugin, PacketType.Play.Client.USE_ENTITY) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 if (event.isCancelled()) {
@@ -28,9 +31,9 @@ public class EntityPacketHandler {
 
                 int id = packet.getIntegers().read(0);
 
-                if (ShopPlugin.getInstance().getEntityHandler().getRegisteredShops().containsKey(id)) {
-                    ShopEntity entity = ShopPlugin.getInstance().getEntityHandler().getRegisteredShops().get(id);
-                    Bukkit.getScheduler().runTask(ShopPlugin.getInstance(), () -> targetPlayer.openInventory(new ShopMenu(entity.getOwnerName(), entity.getOwnerID(),targetPlayer.getUniqueId()).getInventory()));
+                if (shopPlugin.getEntityHandler().getRegisteredShops().containsKey(id)) {
+                    ShopEntity entity = shopPlugin.getEntityHandler().getRegisteredShops().get(id);
+                    Bukkit.getScheduler().runTask(shopPlugin, () -> targetPlayer.openInventory(new ShopMenu(entity.getOwnerName(), entity.getOwnerID(), targetPlayer.getUniqueId(), shopPlugin).getInventory()));
                 }
             }
         });

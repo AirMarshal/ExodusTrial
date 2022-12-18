@@ -33,11 +33,11 @@ public class PlayerShop {
     }
 
     public List<PlayerShopItem> getItems() {
-        return items;
+        return this.items;
     }
 
     public UUID getOwnerID() {
-        return ownerID;
+        return this.ownerID;
     }
 
     public ShopEntity getShopEntity() {

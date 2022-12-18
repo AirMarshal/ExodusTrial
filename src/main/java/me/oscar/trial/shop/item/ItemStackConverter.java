@@ -39,8 +39,9 @@ public class ItemStackConverter extends TypeConverter implements SimpleValueConv
     @Override
     public Object decode(Class<?> aClass, Object o, MappedField mappedField) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines((String) o));
-        BukkitObjectInputStream dataInput = null;
+        BukkitObjectInputStream dataInput;
         ItemStack item = null;
+
         try {
             dataInput = new BukkitObjectInputStream(inputStream);
             item = (ItemStack) dataInput.readObject();

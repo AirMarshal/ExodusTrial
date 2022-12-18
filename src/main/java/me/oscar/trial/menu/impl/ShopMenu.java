@@ -23,12 +23,14 @@ public class ShopMenu extends Menu {
 
     private final UUID ownerID;
     private final UUID openerID;
+    private final ShopPlugin shopPlugin;
 
-    public ShopMenu(String ownerName, UUID uuid, UUID openerID) {
+    public ShopMenu(String ownerName, UUID uuid, UUID openerID, ShopPlugin shopPlugin) {
         super(ChatColor.GOLD + ownerName + "'s Shop", 9);
 
         this.ownerID = uuid;
         this.openerID = openerID;
+        this.shopPlugin = shopPlugin;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class ShopMenu extends Menu {
                 player.updateInventory();
             }
 
-            PlayerShop playerShop = ShopPlugin.getInstance().getShopHandler().getShopByID(this.ownerID);
+            PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(this.ownerID);
             if (event.getClick() == ClickType.LEFT) {
 
                 PlayerShopItem toRemove = null;
@@ -95,18 +97,18 @@ public class ShopMenu extends Menu {
                 if (toRemove != null) {
                     playerShop.getItems().remove(toRemove);
 
-                    Bukkit.getScheduler().runTaskAsynchronously(ShopPlugin.getInstance(), () -> ShopPlugin.getInstance().getDatastore().save(playerShop));
+                    Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> this.shopPlugin.getDatastore().save(playerShop));
 
-                    if (ShopPlugin.getInstance().getConfig().getBoolean("SEND_BUY_MESSAGE")) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', ShopPlugin.getInstance().getConfig().getString("BUY_MESSAGE")
+                    if (this.shopPlugin.getConfig().getBoolean("MESSAGES.BUY.ENABLED")) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.BUY.MESSAGE")
                                 .replace("%item%", toRemove.getStack().getType().name())
                                 .replace("%price%", String.valueOf(toRemove.getPrice()))));
                     }
 
-                    if (ShopPlugin.getInstance().getConfig().getBoolean("SEND_SELL_MESSAGE")) {
+                    if (this.shopPlugin.getConfig().getBoolean("MESSAGES.SELL.ENABLED")) {
                         Player seller = Bukkit.getPlayer(this.ownerID);
                         if (seller != null) {
-                            seller.sendMessage(ChatColor.translateAlternateColorCodes('&', ShopPlugin.getInstance().getConfig().getString("SELL_MESSAGE")
+                            seller.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.SELL.MESSAGE")
                                     .replace("%item%", toRemove.getStack().getType().name())
                                     .replace("%price%", String.valueOf(toRemove.getPrice()))));
                         }
@@ -135,10 +137,10 @@ public class ShopMenu extends Menu {
 
                     if (toRemove != null) {
                         playerShop.getItems().remove(toRemove);
-                        Bukkit.getScheduler().runTaskAsynchronously(ShopPlugin.getInstance(), () -> ShopPlugin.getInstance().getDatastore().save(playerShop));
+                        Bukkit.getScheduler().runTaskAsynchronously(this.shopPlugin, () -> this.shopPlugin.getDatastore().save(playerShop));
 
-                        if (ShopPlugin.getInstance().getConfig().getBoolean("SEND_REMOVE_MESSAGE")) {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', ShopPlugin.getInstance().getConfig().getString("REMOVE_MESSAGE")
+                        if (this.shopPlugin.getConfig().getBoolean("MESSAGES.REMOVE.ENABLED")) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.shopPlugin.getConfig().getString("MESSAGES.REMOVE.MESSAGE")
                                     .replace("%item%", toRemove.getStack().getType().name())
                                     .replace("%price%", String.valueOf(toRemove.getPrice()))));
                         }
@@ -152,7 +154,7 @@ public class ShopMenu extends Menu {
     public Inventory createInventory() {
         Inventory inventory = Bukkit.createInventory(this, this.getItemsPerPage() + 9, this.title);
 
-        PlayerShop playerShop = ShopPlugin.getInstance().getShopHandler().getShopByID(this.ownerID);
+        PlayerShop playerShop = this.shopPlugin.getShopHandler().getShopByID(this.ownerID);
         if (!playerShop.getItems().isEmpty()) {
             playerShop.getItems().forEach(item -> this.getPageItems().add(item));
         }

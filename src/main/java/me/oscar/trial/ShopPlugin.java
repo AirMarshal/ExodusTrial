@@ -14,9 +14,9 @@ import org.mongodb.morphia.mapping.DefaultCreator;
 
 public class ShopPlugin extends JavaPlugin {
 
-    public static ShopPlugin instance;
+    public ShopPlugin instance;
 
-    private EntityHandler entityHandler;
+    private ShopEntityHandler entityHandler;
     private ShopHandler shopHandler;
 
     private Datastore datastore;
@@ -41,7 +41,7 @@ public class ShopPlugin extends JavaPlugin {
         this.registerListeners();
         this.getLogger().info("Successfully loaded listeners");
 
-        this.getCommand("shop").setExecutor(new ShopCommands());
+        this.getCommand("shop").setExecutor(new ShopCommands(this));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ShopPlugin extends JavaPlugin {
         morphia.getMapper().getOptions().setObjectFactory(new DefaultCreator() {
             @Override
             protected ClassLoader getClassLoaderForClass() {
-                return ShopPlugin.getInstance().getClassLoader();
+                return instance.getClassLoader();
             }
         });
 
@@ -68,22 +68,18 @@ public class ShopPlugin extends JavaPlugin {
     }
 
     private void registerManagers() {
-        this.entityHandler = new EntityHandler();
-        new EntityPacketHandler();
-        this.shopHandler = new ShopHandler();
+        this.entityHandler = new ShopEntityHandler(this);
+        new EntityPacketHandler(this);
+        this.shopHandler = new ShopHandler(this);
     }
 
     private void registerListeners() {
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(new MenuListener(), this);
-        pluginManager.registerEvents(new EntityListener(), this);
+        pluginManager.registerEvents(new ShopEntityListener(this), this);
     }
 
-    public static ShopPlugin getInstance() {
-        return instance;
-    }
-
-    public EntityHandler getEntityHandler() {
+    public ShopEntityHandler getEntityHandler() {
         return this.entityHandler;
     }
 

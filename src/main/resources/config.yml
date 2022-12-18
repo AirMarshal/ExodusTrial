@@ -1,6 +1,27 @@
-SEND_BUY_MESSAGE: TRUE
-SEND_SELL_MESSAGE: TRUE
-SEND_REMOVE_MESSAGE: TRUE
-SELL_MESSAGE: "&eYou have sold &b%item% &efor &b%price%"
-BUY_MESSAGE: "&eYou have purchased &b%item% &efor &b$%price%"
-REMOVE_MESSAGE: "&eYou have removed &b%item% &efrom your shop."
+MESSAGES:
+  SELL:
+    ENABLED: TRUE
+    MESSAGE: "&eYou have sold &b%item% &efor &b%price%"
+  BUY:
+    ENABLED: TRUE
+    MESSAGE: "&eYou have purchased &b%item% &efor &b$%price%"
+  REMOVE:
+    ENABLED: TRUE
+    MESSAGE: "&eYou have removed &b%item% &efrom your shop."
+  SHOP_CREATE: "&aYou have created a shop!"
+  SHOP_DELETE: "&cYou have deleted your shop!"
+  LIST:
+    ENABLED: TRUE
+    MESSAGE: "&eYou have listed &b%item% &efor &b%price%"
+  ERROR:
+    HELP:
+      - "&6Shop Commands: "
+      - " "
+      - "&e/shop create"
+      - "&e/shop additem"
+      - "&e/shop delete"
+    ALREADY_HAVE_SHOP: "&cYou already have a shop!"
+    DONT_HAVE_SHOP: "&cYou do not have a shop!"
+    EMPTY_HAND: "&cYou must have the item you wish to sell in your hands!"
+    INVALID_PRICE: "&cYou must enter a price you wish to sell the price for."
+    NEGATIVE_PRICE: "&cYou must list your item for more than 0"
